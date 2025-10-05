@@ -1,0 +1,365 @@
+/* src/styles/whatsapp-styles.css */
+
+/* Police système WhatsApp */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar personnalisée style WhatsApp */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Fond WhatsApp avec pattern */
+.whatsapp-bg-light {
+  background-color: #efeae2;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(0, 0, 0, 0.02) 10px,
+      rgba(0, 0, 0, 0.02) 20px
+    );
+}
+
+.whatsapp-bg-dark {
+  background-color: #0c1317;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255, 255, 255, 0.02) 10px,
+      rgba(255, 255, 255, 0.02) 20px
+    );
+}
+
+/* Bulles de message style WhatsApp */
+.message-bubble {
+  position: relative;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Queue des bulles */
+.message-bubble-user::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid #dcf8c6;
+  border-bottom: 8px solid transparent;
+}
+
+.message-bubble-bot::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-right: 8px solid white;
+  border-bottom: 8px solid transparent;
+}
+
+.dark .message-bubble-bot::after {
+  border-right-color: #1f2c34;
+}
+
+/* Textarea auto-resize */
+textarea {
+  field-sizing: content;
+  min-height: 40px;
+  max-height: 120px;
+}
+
+/* Support pour les navigateurs qui ne supportent pas field-sizing */
+@supports not (field-sizing: content) {
+  textarea {
+    overflow-y: auto;
+    resize: none;
+  }
+}
+
+/* Animation fade-in optimisée */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+/* Animation slide-up optimisée */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Animation pour les points de typing */
+@keyframes bounce-typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce-typing 1.4s infinite ease-in-out;
+}
+
+/* Empêcher le scroll du body quand le clavier apparaît sur mobile */
+html, body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Pour les conteneurs scrollables */
+.scrollable-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix pour iOS Safari - empêcher le bounce effect */
+body {
+  overscroll-behavior-y: none;
+}
+
+/* Gestion du viewport sur mobile */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari */
+  .chat-container {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Améliorer les performances de scroll */
+.messages-container {
+  will-change: scroll-position;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Optimiser le rendu des messages */
+.message-item {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Empêcher la sélection de texte sur les éléments interactifs */
+button, .interactive {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Permettre la sélection dans les messages */
+.message-content {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Focus visible pour l'accessibilité */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Transitions douces */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Désactiver les transitions sur les éléments qui en ont déjà */
+.no-transition {
+  transition: none !important;
+}
+
+/* Amélioration du rendu du texte */
+p, span, div {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Style pour les liens dans les messages */
+.message-content a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.message-content a:hover {
+  color: #0056b3;
+}
+
+/* Style pour les codes inline */
+.message-content code {
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+/* Style pour les blocs de code */
+.message-content pre {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 8px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.dark .message-content pre {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Boutons de suggestion cliquables */
+.suggestion-button {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.suggestion-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Indicateur de scroll */
+.scroll-indicator {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-indicator.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Animation de chargement pour les images */
+.image-loading {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .message-bubble {
+    max-width: 85%;
+  }
+  
+  .suggestion-button {
+    font-size: 13px;
+  }
+}
+
+/* Amélioration pour les petits écrans */
+@media (max-height: 600px) {
+  .messages-container {
+    max-height: calc(100vh - 120px);
+  }
+}
+
+/* Support du dark mode système */
+@media (prefers-color-scheme: dark) {
+  /* Styles automatiques si l'utilisateur n'a pas défini de préférence */
+}
+
+/* Amélioration des performances pour les animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
