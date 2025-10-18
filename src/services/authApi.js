@@ -1,5 +1,8 @@
 // services/authApi.js
-const AUTH_API_URL = "https://chatbot-auth-backend.onrender.com/api/auth";
+
+// ✅ Utiliser la variable d'environnement (production) ou localhost (développement)
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const AUTH_API_URL = `${API_URL}/api/auth`;
 
 class AuthApiService {
   constructor() {
@@ -68,12 +71,25 @@ class AuthApiService {
     }
   }
 
+  // Vérification d'email
   async verifyEmail(token) {
-  const response = await fetch(`${this.baseURL}/verify/${token}`);
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error?.message || 'Token invalide');
-  return data;
-}
+    try {
+      const response = await fetch(`${this.baseURL}/verify/${token}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Token invalide');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   // Connexion
   async login(credentials) {
@@ -118,26 +134,6 @@ class AuthApiService {
     }
   }
 
-  // Vérification d'email
-  async verifyEmail(token) {
-    try {
-      const response = await fetch(`${this.baseURL}/verify/${token}`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Token invalide');
-      }
-
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   // Déconnexion
   async logout() {
     try {
@@ -154,9 +150,10 @@ class AuthApiService {
         });
       }
 
-      // Nettoyer le localStorage
+      // ✅ Nettoyer UNIQUEMENT les données de session
       localStorage.removeItem('sessionToken');
       localStorage.removeItem('userInfo');
+      // NE PAS supprimer deviceId ni les autres données
       
     } catch (error) {
       // Nettoyer même en cas d'erreur
@@ -175,26 +172,12 @@ class AuthApiService {
       return null;
     }
 
+    // Simplement retourner les infos locales sans vérifier avec le serveur
     try {
-      // Optionnel: vérifier si le token est encore valide
-      const response = await fetch(`${this.baseURL}/verify-session`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
-        }
-      });
-
-      if (response.ok) {
-        return JSON.parse(userInfo);
-      } else {
-        // Token expiré
-        this.logout();
-        return null;
-      }
-    } catch (error) {
-      // En cas d'erreur, on garde la session locale
       return JSON.parse(userInfo);
+    } catch (error) {
+      this.logout();
+      return null;
     }
   }
 

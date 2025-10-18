@@ -1,8 +1,8 @@
-// components/Sidebar.jsx - VERSION AVEC RECHERCHE
-import React, { useState, useEffect } from 'react';
+// components/Sidebar.jsx
+import React from 'react';
 import { 
   X, MessageSquare, Clock, Settings, Info, Download, Share2, 
-  User, LogOut, Trash2, Archive, Star, HelpCircle, Search, Loader2
+  User, LogOut, Trash2, Archive, Star, HelpCircle
 } from 'lucide-react';
 import { useChatContext } from '../context/ChatContext';
 
@@ -17,44 +17,10 @@ const Sidebar = () => {
     conversationHistory,
     getThemeClasses,
     showNotification,
-    clearChat,
-    searchConversations,
-    isSearching,
-    searchResults,
-    loadConversation
+    clearChat
   } = useChatContext();
 
   const theme = getThemeClasses();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showResults, setShowResults] = useState(false);
-  const [localResults, setLocalResults] = useState([]);
-
-  // Recherche locale dans conversationHistory
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      const filtered = conversationHistory.filter(conv => 
-        conv.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        conv.messages?.some(msg => 
-          msg.text?.toLowerCase().includes(searchQuery.toLowerCase())
-        ) ||
-        conv.tags?.some(tag => 
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-      setLocalResults(filtered);
-      setShowResults(true);
-    } else {
-      setShowResults(false);
-      setLocalResults([]);
-    }
-  }, [searchQuery, conversationHistory]);
-
-  // Recherche serveur (optionnel, pour recherche avancée)
-  const handleServerSearch = async () => {
-    if (searchQuery.trim()) {
-      await searchConversations(searchQuery);
-    }
-  };
 
   if (!sidebarOpen) return null;
 
@@ -112,29 +78,19 @@ const Sidebar = () => {
     });
   };
 
-  const handleConversationClick = (conv) => {
-    loadConversation(conv.id);
-    setSidebarOpen(false);
-  };
-
   return (
     <>
       {/* Overlay */}
       <div 
         className="fixed inset-0 bg-black/50 z-40 animate-fade-in" 
-        onClick={(e) => {
-          // Ne fermer QUE si on clique sur l'overlay lui-même
-          if (e.target === e.currentTarget) {
-            setSidebarOpen(false);
-          }
-        }}
+        onClick={() => setSidebarOpen(false)}
       />
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full w-80 ${theme.sidebar} backdrop-blur-xl transform transition-transform duration-300 z-50 shadow-2xl
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-      >
+          className={`fixed left-0 top-0 h-full w-80 ${theme.sidebar} backdrop-blur-xl transform transition-transform duration-300 z-50 shadow-2xl
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-6 border-b border-gray-200/20">
@@ -150,7 +106,7 @@ const Sidebar = () => {
 
             {/* Profil utilisateur */}
             {user && (
-              <div className={`p-3 rounded-2xl ${theme.card} border mb-4`}>
+              <div className={`p-3 rounded-2xl ${theme.card} border`}>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
                     <User className="w-5 h-5 text-white"/>
@@ -162,104 +118,9 @@ const Sidebar = () => {
                 </div>
               </div>
             )}
-
-            {/* NOUVEAU : Barre de recherche */}
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
-              <div className={`flex items-center gap-2 ${theme.input} rounded-xl px-3 py-2 border`}>
-                <Search className={`w-4 h-4 ${theme.textSecondary}`}/>
-                <input
-                  type="text"
-                  placeholder="Rechercher..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleServerSearch()}
-                  onClick={(e) => e.stopPropagation()}
-                  className={`flex-1 bg-transparent outline-none ${theme.text} placeholder-gray-400 text-sm`}
-                />
-                {isSearching && <Loader2 className="w-4 h-4 animate-spin text-blue-500"/>}
-                {searchQuery && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSearchQuery('');
-                      setShowResults(false);
-                    }}
-                    className={`${theme.textSecondary} hover:${theme.text}`}
-                  >
-                    <X className="w-4 h-4"/>
-                  </button>
-                )}
-              </div>
-
-              {/* Résultats de recherche */}
-              {showResults && localResults.length > 0 && (
-                <div 
-                  className={`absolute top-full left-0 right-0 mt-2 ${theme.card} rounded-xl border shadow-xl max-h-64 overflow-y-auto`}
-                  style={{ zIndex: 60 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="p-2">
-                    <p className={`text-xs ${theme.textSecondary} px-2 py-1`}>
-                      {localResults.length} résultat(s)
-                    </p>
-                    {localResults.map((conv, index) => (
-                      <button
-                        key={conv.id || index}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleConversationClick(conv);
-                        }}
-                        className={`w-full text-left p-3 rounded-lg hover:bg-gray-100/20 transition-colors ${theme.text}`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <MessageSquare className="w-4 h-4 mt-1 text-blue-500 flex-shrink-0"/>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{conv.title}</p>
-                            {conv.lastMessage && (
-                              <p className={`text-xs ${theme.textSecondary} truncate mt-1`}>
-                                {conv.lastMessage}
-                              </p>
-                            )}
-                            {conv.tags && conv.tags.length > 0 && (
-                              <div className="flex gap-1 mt-2 flex-wrap">
-                                {conv.tags.slice(0, 3).map((tag, idx) => (
-                                  <span key={idx} className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full">
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Aucun résultat */}
-              {showResults && localResults.length === 0 && searchQuery.trim() && (
-                <div 
-                  className={`absolute top-full left-0 right-0 mt-2 ${theme.card} rounded-xl border shadow-xl p-4`}
-                  style={{ zIndex: 60 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <p className={`text-sm ${theme.textSecondary} text-center`}>
-                    Aucun résultat trouvé
-                  </p>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleServerSearch();
-                    }}
-                    className="w-full mt-2 text-sm text-blue-500 hover:text-blue-600"
-                  >
-                    Rechercher sur le serveur
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
+
+          
 
           {/* Menu principal */}
           <div className="flex-1 overflow-y-auto p-6">
@@ -304,39 +165,6 @@ const Sidebar = () => {
                   theme={theme}
                 />
               </div>
-
-              {/* Séparateur */}
-              <div className="border-t border-gray-200/20 my-4"></div>
-
-              {/* Conversations récentes */}
-              {conversationHistory.length > 0 && !showResults && (
-                <div className="space-y-2">
-                  <p className={`text-xs ${theme.textSecondary} px-2 font-semibold uppercase tracking-wider`}>
-                    Récentes
-                  </p>
-                  {conversationHistory.slice(0, 5).map((conv, index) => (
-                    <button
-                      key={conv.id || index}
-                      onClick={() => handleConversationClick(conv)}
-                      className={`w-full text-left p-3 rounded-xl hover:bg-gray-100/20 transition-all ${theme.text} group`}
-                    >
-                      <div className="flex items-start gap-2">
-                        <MessageSquare className="w-4 h-4 mt-1 text-blue-500"/>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate group-hover:text-blue-500 transition-colors">
-                            {conv.title}
-                          </p>
-                          {conv.lastMessage && (
-                            <p className={`text-xs ${theme.textSecondary} truncate mt-1`}>
-                              {conv.lastMessage.substring(0, 50)}...
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
 
               {/* Séparateur */}
               <div className="border-t border-gray-200/20 my-4"></div>
