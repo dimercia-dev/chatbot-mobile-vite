@@ -10,8 +10,8 @@ import { useChatContext } from '../context/ChatContext';
 import Sidebar from './Sidebar';
 import EmojiPicker from 'emoji-picker-react';
 
-const WEBHOOK_URL = "https://n8n-latest-taz3.onrender.com/webhook-test/mobile-chat";
-const API_KEY = "UdOJQviEWrGINh0U3LcrNm0RyQ8KkPsz75mpttUp6XU=";
+const WEBHOOK_URL = import.meta.env.VITE_WEBHOOK_URL || "https://n8n-latest-taz3.onrender.com/webhook-test/mobile-chat";
+const API_KEY = import.meta.env.VITE_API_KEY || "UdOJQviEWrGINh0U3LcrNm0RyQ8KkPsz75mpttUp6XU=";
 
 const ChatScreen = () => {
   const {
