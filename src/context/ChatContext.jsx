@@ -5,8 +5,8 @@ import authApi from '../services/authApi';
 const ChatContext = createContext();
 
 // Configuration des endpoints
-const API_BASE = "https://n8n-latest-taz3.onrender.com/webhook-test";
-const API_KEY = "UdOJQviEWrGINh0U3LcrNm0RyQ8KkPsz75mpttUp6XU=";
+const API_BASE = "https://n8n-latest-taz3.onrender.com/webhook/mobile-chat";
+const API_KEY = "prod_VFxiwv0FlnnQa0Tw7B3kVsZ3_Txvg6Mgvfkd20O3xh4";
 
 export const useChatContext = () => {
   const context = useContext(ChatContext);
